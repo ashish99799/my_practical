@@ -1,33 +1,31 @@
 package com.my.practical.task.ui.view.github_user
 
+import android.annotation.SuppressLint
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.my.practical.task.R
 import com.my.practical.task.base.AppBaseActivity
 import com.my.practical.task.databinding.ActivityGithubUserBinding
 import com.my.practical.task.model.responses.RowData
-import com.my.practical.task.model.responses.UserData
-import com.my.practical.task.model.responses.UserRepoData
-import com.my.practical.task.ui.listeners.GithubUserListener
 import com.my.practical.task.ui.view.github_user.adapter.UserRepoAdapter
 import com.my.practical.task.ui.view_model.GithubUserViewModel
 import com.my.practical.task.util.INTENT_DATA
 import com.my.practical.task.util.loadImage
-import org.jetbrains.anko.toast
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GithubUser : AppBaseActivity<ActivityGithubUserBinding>(), GithubUserListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
+class GithubUser : AppBaseActivity<ActivityGithubUserBinding, GithubUserViewModel>(), SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     var rowData: RowData? = null
-
-    lateinit var viewModel: GithubUserViewModel
     lateinit var userRepoAdapter: UserRepoAdapter
 
+    // View Binding
     override fun setViewBinding() = ActivityGithubUserBinding.inflate(layoutInflater)
+
+    // Attach ViewModel
+    override fun setViewModel() = GithubUserViewModel.newInstance(this)
 
     override fun initView() {
         rowData = intent.getParcelableExtra(INTENT_DATA)
@@ -43,11 +41,6 @@ class GithubUser : AppBaseActivity<ActivityGithubUserBinding>(), GithubUserListe
         binding.imgAvatar.loadImage((rowData!!.avatar_url ?: ""))
         binding.lblUserName.text = (rowData!!.login ?: "")
 
-        // Attach ViewModel
-        viewModel = ViewModelProvider(this).get(GithubUserViewModel::class.java)
-        viewModel.githubUserListener = this
-        viewModel.swipeRefreshLayout = binding.swipeRefreshLayout
-
         userRepoAdapter = UserRepoAdapter()
         binding.rvUserRepo.apply {
             adapter = userRepoAdapter.also {
@@ -62,7 +55,7 @@ class GithubUser : AppBaseActivity<ActivityGithubUserBinding>(), GithubUserListe
         binding.swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent)
         binding.swipeRefreshLayout.isRefreshing = true
 
-        viewModel.onUserInfo(this, (rowData!!.login ?: ""))
+        getUserInfo()
         onRefresh()
     }
 
@@ -70,8 +63,33 @@ class GithubUser : AppBaseActivity<ActivityGithubUserBinding>(), GithubUserListe
 
     }
 
+    @SuppressLint("SimpleDateFormat")
+    private fun getUserInfo() {
+        viewModel.onUserInfo((rowData!!.login ?: "")) {
+            binding.lblUserName.text = (it.login ?: "")
+            binding.lblEmail.text = ("Email : ").plus(it.email ?: "")
+            binding.lblLocation.text = ("Location : ").plus(it.location ?: "")
+            binding.lblFollowers.text = (it.followers ?: 0).toString().plus(" Followers")
+            binding.lblFollowing.text = ("Following ").plus(it.following ?: 0)
+
+            val inputFormat = SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ss'Z'"))
+            val outputFormat = SimpleDateFormat(("dd-MM-yyyy"))
+
+            val my_date = it.created_at
+            val date: Date = inputFormat.parse(my_date)
+
+            binding.lblJoinDate.text = ("Join Date : ").plus(outputFormat.format(date))
+        }
+    }
+
     override fun onRefresh() {
-        viewModel.onUserRepo(this, (rowData!!.login ?: ""))
+        getUserRepo()
+    }
+
+    private fun getUserRepo() {
+        viewModel.onUserRepo((rowData!!.login ?: ""), binding.swipeRefreshLayout) {
+            userRepoAdapter.addAll(it)
+        }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -81,30 +99,6 @@ class GithubUser : AppBaseActivity<ActivityGithubUserBinding>(), GithubUserListe
     override fun onQueryTextChange(newText: String?): Boolean {
         userRepoAdapter.filter.filter(newText)
         return false
-    }
-
-    override fun onSuccess(data: UserData) {
-        binding.lblUserName.text = (data.login ?: "")
-        binding.lblEmail.text = ("Email : ").plus(data.email ?: "")
-        binding.lblLocation.text = ("Location : ").plus(data.location ?: "")
-        binding.lblFollowers.text = (data.followers ?: 0).toString().plus(" Followers")
-        binding.lblFollowing.text = ("Following ").plus(data.following ?: 0)
-
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        val outputFormat = SimpleDateFormat("dd-MM-yyyy")
-
-        val my_date = data.created_at
-        val date: Date = inputFormat.parse(my_date)
-
-        binding.lblJoinDate.text = ("Join Date : ").plus(outputFormat.format(date))
-    }
-
-    override fun onSuccess(data: List<UserRepoData>) {
-        userRepoAdapter.addAll(data)
-    }
-
-    override fun onFailure(message: String) {
-        toast(message)
     }
 
     override fun onSupportNavigateUp(): Boolean {

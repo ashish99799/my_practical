@@ -1,12 +1,18 @@
 package com.my.practical.task.model.repositorys
 
-import com.my.practical.task.model.api.ApiClient
+import com.my.practical.task.base.AppBaseRepository
+import com.my.practical.task.model.responses.DataResponse
 import com.my.practical.task.model.responses.UserData
 import com.my.practical.task.model.responses.UserRepoData
 import io.reactivex.Observable
 
 // Repository
-class GithubUserRepository(val api: ApiClient) {
+class AppRepository : AppBaseRepository() {
+
+    fun getSearchUser(query: String, page: Int): Observable<DataResponse> {
+        // Ratrofit API Calling
+        return api.getUserSearch(query, page)
+    }
 
     fun onUserInfo(query: String): Observable<UserData> {
         // Ratrofit API Calling

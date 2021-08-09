@@ -4,6 +4,7 @@ import com.my.practical.task.model.responses.DataResponse
 import com.my.practical.task.model.responses.UserData
 import com.my.practical.task.model.responses.UserRepoData
 import io.reactivex.Observable
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -12,13 +13,25 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 interface ApiClient {
 
     companion object {
+        val dispatcher = Dispatcher().apply {
+            maxRequests = 1
+        }
+
         operator fun invoke(): ApiClient {
             val client = OkHttpClient
                 .Builder()
+//                .dispatcher(dispatcher)
+                .connectTimeout(2, TimeUnit.MINUTES)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .writeTimeout(2, TimeUnit.MINUTES)
+                .followRedirects(false)
+                .followSslRedirects(false)
+                .retryOnConnectionFailure(false)
                 .build()
 
             return Retrofit.Builder()

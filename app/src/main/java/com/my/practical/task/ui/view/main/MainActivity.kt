@@ -5,12 +5,9 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.my.practical.task.R
 import com.my.practical.task.base.AppBaseActivity
 import com.my.practical.task.databinding.ActivityMainBinding
-import com.my.practical.task.model.responses.RowData
-import com.my.practical.task.ui.listeners.MainActivityListener
 import com.my.practical.task.ui.view.github_user.GithubUser
 import com.my.practical.task.ui.view.main.adapter.GithubUserAdapter
 import com.my.practical.task.ui.view_model.MainActivityViewModel
@@ -21,25 +18,21 @@ import com.my.practical.task.wegates.RefreshLayoutHelper
 import com.scwang.smartrefresh.layout.api.RefreshLayout
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 
-class MainActivity : AppBaseActivity<ActivityMainBinding>(), MainActivityListener, OnLoadmoreListener, SearchView.OnQueryTextListener, View.OnClickListener {
+class MainActivity : AppBaseActivity<ActivityMainBinding, MainActivityViewModel>(), OnLoadmoreListener, SearchView.OnQueryTextListener, View.OnClickListener {
 
     var query: String = ""
     var page: Int = 1
-
-    lateinit var viewModel: MainActivityViewModel
     lateinit var githubUserAdapter: GithubUserAdapter
 
+    // View Binding
     override fun setViewBinding() = ActivityMainBinding.inflate(layoutInflater)
+    // View Model
+    override fun setViewModel() = MainActivityViewModel.newInstance(this)
 
     override fun initView() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = getString(R.string.app_name)
-
-        viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        viewModel.mainActivityListener = this
-        viewModel.smartRefreshLayout = binding.smartRefresh
 
         githubUserAdapter = GithubUserAdapter()
         binding.rvGithubUsers.apply {
@@ -76,8 +69,7 @@ class MainActivity : AppBaseActivity<ActivityMainBinding>(), MainActivityListene
     }
 
     override fun onLoadmore(refreshlayout: RefreshLayout) {
-        page++
-        viewModel.getSearchUser(this, query, page)
+        getSearchUser()
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -91,20 +83,19 @@ class MainActivity : AppBaseActivity<ActivityMainBinding>(), MainActivityListene
 
         query = newText.toString()
         page = 1
-        viewModel.getSearchUser(this, query, page)
+        getSearchUser()
         return false
     }
 
-    override fun onSuccess(data: ArrayList<RowData>) {
-        if (page == 1) {
-            githubUserAdapter.addAll(data)
-        } else {
-            githubUserAdapter.appendAll(data)
+    private fun getSearchUser() {
+        viewModel.getSearchUser(query, page, binding.smartRefresh) {
+            if (page == 1) {
+                githubUserAdapter.addAll(it)
+            } else {
+                githubUserAdapter.appendAll(it)
+                page++
+            }
         }
-    }
-
-    override fun onFailure(message: String) {
-        toast(message)
     }
 
     override fun onBackPressed() {

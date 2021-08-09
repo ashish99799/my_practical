@@ -4,11 +4,11 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.viewbinding.ViewBinding
 
-abstract class AppBaseFilterAdapter<T, B : ViewBinding>() : AppBaseAdapter<T, B>(), Filterable {
+abstract class AppBaseFilterAdapter<M, VB : ViewBinding>() : AppBaseAdapter<M, VB>(), Filterable {
 
-    val mainList = ArrayList<T>()
+    val mainList = ArrayList<M>()
 
-    abstract fun includeItem(query: CharSequence?, item: T): Boolean
+    abstract fun includeItem(query: CharSequence?, item: M): Boolean
 
     override fun getFilter(): Filter {
         return object : Filter() {
@@ -20,7 +20,7 @@ abstract class AppBaseFilterAdapter<T, B : ViewBinding>() : AppBaseAdapter<T, B>
                     return filterResults
                 }
 
-                val tempList = ArrayList<T>()
+                val tempList = ArrayList<M>()
                 mainList.forEach {
                     val isExist = includeItem(constraint, it)
                     if (isExist) {
@@ -37,13 +37,13 @@ abstract class AppBaseFilterAdapter<T, B : ViewBinding>() : AppBaseAdapter<T, B>
 
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
                 list.clear()
-                list.addAll(results.values as ArrayList<T>)
+                list.addAll(results.values as ArrayList<M>)
                 notifyDataSetChanged()
             }
         }
     }
 
-    override fun addAll(dataList: Collection<T>) {
+    override fun addAll(dataList: Collection<M>) {
         super.addAll(dataList)
         mainList.clear()
         mainList.addAll(dataList)

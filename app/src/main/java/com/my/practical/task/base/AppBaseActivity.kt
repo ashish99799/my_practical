@@ -5,20 +5,43 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 
-abstract class AppBaseActivity<T : ViewBinding> : AppCompatActivity() {
+abstract class AppBaseActivity<VB : ViewBinding, VM : AppBaseViewModel> : AppCompatActivity() {
 
-    lateinit var binding: T
+    lateinit var binding: VB
+    abstract fun setViewBinding(): VB
 
-    abstract fun setViewBinding(): T
+    lateinit var viewModel: VM
+    abstract fun setViewModel(): VM
+
     abstract fun initView()
     abstract fun initOnClick()
+
+    protected val activityLauncher = AppBaseActivityResult.registerActivityForResult(this)
+    /*activityLauncher.launch(Intent(this, MyCouponsByVendorActivity::class.java).apply {
+        putExtra(VENDOR_DATA, qrCodeData)
+    }) {
+        it.apply {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    if (data!!.hasExtra(SELECTED_COUPON)) {
+                        selectedCoupon = data!!.getParcelableExtra(SELECTED_COUPON)
+                        if (selectedCoupon != null) {
+                            createUserOrder()
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = setViewBinding()
         setContentView(binding.root)
+        viewModel = ViewModelProvider(this).get(setViewModel()::class.java)
         initView()
         initOnClick()
     }

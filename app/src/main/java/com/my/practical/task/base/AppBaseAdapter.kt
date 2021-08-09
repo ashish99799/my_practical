@@ -7,34 +7,34 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.my.practical.task.MyApplication
 
-abstract class AppBaseAdapter<T, B : ViewBinding>() : RecyclerView.Adapter<AppBaseAdapter<T, B>.ViewHolder>() {
+abstract class AppBaseAdapter<M, VB : ViewBinding>() : RecyclerView.Adapter<AppBaseAdapter<M, VB>.ViewHolder>() {
 
-    val list = ArrayList<T>()
+    val list = ArrayList<M>()
 
-    private var mOnFilterBind: OnFilterBind<T>? = null
+    private var mOnFilterBind: OnFilterBind<M>? = null
     private var mOnLayoutSelector: OnLayoutSelector? = null
 
     private lateinit var mRecyclerView: RecyclerView
     private var emptyView: View? = null
 
-    private var onClickView: ((View, Int, T) -> Unit)? = null
+    private var onClickView: ((View, Int, M) -> Unit)? = null
     private var onCreateViewHolderBlock: ((View) -> View)? = null
     protected val mContext = MyApplication.getInstance()
 
     private var layout: Int = 0
-    lateinit var binding: B
+    lateinit var binding: VB
 
-    abstract fun getViewBinding(parent: ViewGroup, attachToRoot: Boolean): B
+    abstract fun getViewBinding(parent: ViewGroup, attachMoRoot: Boolean): VB
 
     fun setOnLayoutSelector(mOnLayoutSelector: OnLayoutSelector) {
         this.mOnLayoutSelector = mOnLayoutSelector
     }
 
-    interface OnFilterBind<in T> {
-        fun onFilter(searchKey: String): ArrayList<in T>
+    interface OnFilterBind<in M> {
+        fun onFilter(searchKey: String): ArrayList<in M>
     }
 
-    fun setItemClickListener(onClickView: (View, Int, T) -> Unit) {
+    fun setItemClickListener(onClickView: (View, Int, M) -> Unit) {
         this.onClickView = onClickView
     }
 
@@ -43,7 +43,7 @@ abstract class AppBaseAdapter<T, B : ViewBinding>() : RecyclerView.Adapter<AppBa
     }
 
     interface OnLayoutSelector {
-        fun selectLayout(itemViewType: Int): Int?
+        fun selectLayout(itemViewMype: Int): Int?
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -77,7 +77,7 @@ abstract class AppBaseAdapter<T, B : ViewBinding>() : RecyclerView.Adapter<AppBa
 
     override fun getItemCount(): Int = list.size
 
-    inner class ViewHolder(val view: B, val context: Context) : RecyclerView.ViewHolder(view.root) {
+    inner class ViewHolder(val view: VB, val context: Context) : RecyclerView.ViewHolder(view.root) {
 
         init {
             setClickableView(view.root).forEach { clickView ->
@@ -95,28 +95,28 @@ abstract class AppBaseAdapter<T, B : ViewBinding>() : RecyclerView.Adapter<AppBa
         mRecyclerView = recyclerView
     }
 
-    open fun addItemAt(index: Int, item: T) {
+    open fun addItemAt(index: Int, item: M) {
         list.add(index, item)
         notifyItemInserted(index)
     }
 
-    open fun addItem(item: T) {
+    open fun addItem(item: M) {
         list.add(item)
         notifyItemInserted(list.size)
     }
 
-    open fun addAll(dataList: Collection<T>) {
+    open fun addAll(dataList: Collection<M>) {
         list.clear()
         list.addAll(dataList)
         notifyDataSetChanged()
         if (::mRecyclerView.isInitialized) mRecyclerView.checkIfEmpty(emptyView)
     }
 
-    open fun getItem(position: Int): T {
+    open fun getItem(position: Int): M {
         return list[position]
     }
 
-    open fun appendAll(dataList: Collection<T>) {
+    open fun appendAll(dataList: Collection<M>) {
         val oldSize = list.size
         list.addAll(dataList)
         notifyItemRangeInserted(oldSize, dataList.size)
@@ -142,9 +142,9 @@ abstract class AppBaseAdapter<T, B : ViewBinding>() : RecyclerView.Adapter<AppBa
 
     abstract fun onBind(
         viewType: Int,
-        view: B,
+        view: VB,
         position: Int,
-        item: T,
+        item: M,
         payloads: MutableList<Any>? = null
     )
 

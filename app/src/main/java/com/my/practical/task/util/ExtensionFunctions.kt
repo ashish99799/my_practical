@@ -18,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.my.practical.task.R
 import com.my.practical.task.databinding.ProgressBinding
+import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.toast
 
 const val INTENT_DATA = "INTENT_DATA"
@@ -79,8 +80,8 @@ fun Context.showDialog() {
     lp.copyFrom(SpinKitProgressDialog!!.window!!.attributes)
     lp.width = WindowManager.LayoutParams.WRAP_CONTENT
     lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-    SpinKitProgressDialog!!.show()
     SpinKitProgressDialog!!.window!!.attributes = lp
+    SpinKitProgressDialog!!.show()
 }
 
 fun Context.hideDialog() {
