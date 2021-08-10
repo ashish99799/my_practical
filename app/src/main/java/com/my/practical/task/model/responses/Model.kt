@@ -2,6 +2,9 @@ package com.my.practical.task.model.responses
 
 import android.os.Parcelable
 import androidx.annotation.Keep
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 import java.io.Serializable
 
@@ -32,6 +35,38 @@ data class BaseListResponse<T>(
     val message: String = "",
     val data: ArrayList<T>? = null
 ) : Serializable
+
+@Keep
+@Parcelize
+data class JsonData(
+    var gym_list: ArrayList<GymList>? = arrayListOf()
+) : Parcelable
+
+@Keep
+@Parcelize
+data class GymList(
+    val id: Int,
+    val title: String? = "",
+    val date_time: String? = "",
+    val image: String? = "",
+    val favorite: Boolean? = false,
+    val price: Double? = 0.0,
+    val rating: Double? = 0.0,
+    val popular_gym: List<PopularGym>? = arrayListOf()
+) : Parcelable
+
+@Keep
+@Parcelize
+data class PopularGym(
+    val id: Int,
+    val title: String? = "",
+    val description: String? = "",
+    val favorite: Boolean? = false,
+    val price: Double? = 0.0,
+    val rating: Double? = 0.0,
+    val location: String? = "",
+    val image: String? = ""
+) : Parcelable
 
 @Keep
 @Parcelize

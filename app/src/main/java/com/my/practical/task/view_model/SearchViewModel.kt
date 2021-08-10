@@ -1,4 +1,4 @@
-package com.my.practical.task.ui.view_model
+package com.my.practical.task.view_model
 
 import android.content.Context
 import com.my.practical.task.base.AppBaseViewModel
@@ -6,14 +6,14 @@ import com.my.practical.task.model.repositorys.AppRepository
 import com.my.practical.task.model.responses.RowData
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 
-class MainActivityViewModel : AppBaseViewModel() {
+class SearchViewModel : AppBaseViewModel() {
 
     companion object {
         lateinit var mContext: Context
         var appRepository: AppRepository = AppRepository()
 
         @JvmStatic
-        fun newInstance(context: Context) = MainActivityViewModel().apply {
+        fun newInstance(context: Context) = SearchViewModel().apply {
             mContext = context
         }
     }

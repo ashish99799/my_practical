@@ -1,4 +1,4 @@
-package com.my.practical.task.ui.view.github_user
+package com.my.practical.task.view.main.github_user
 
 import android.annotation.SuppressLint
 import android.view.View
@@ -9,14 +9,14 @@ import com.my.practical.task.R
 import com.my.practical.task.base.AppBaseActivity
 import com.my.practical.task.databinding.ActivityGithubUserBinding
 import com.my.practical.task.model.responses.RowData
-import com.my.practical.task.ui.view.github_user.adapter.UserRepoAdapter
-import com.my.practical.task.ui.view_model.GithubUserViewModel
+import com.my.practical.task.view.main.github_user.adapter.UserRepoAdapter
+import com.my.practical.task.view_model.GithubUserViewModel
 import com.my.practical.task.util.INTENT_DATA
 import com.my.practical.task.util.loadImage
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GithubUser : AppBaseActivity<ActivityGithubUserBinding, GithubUserViewModel>(), SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
+class GithubUserActivity : AppBaseActivity<ActivityGithubUserBinding, GithubUserViewModel>(), SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     var rowData: RowData? = null
     lateinit var userRepoAdapter: UserRepoAdapter

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 
+// VB | VM => Template types
 abstract class AppBaseActivity<VB : ViewBinding, VM : AppBaseViewModel> : AppCompatActivity() {
 
     lateinit var binding: VB

@@ -1,4 +1,4 @@
-package com.my.practical.task.ui.view.main
+package com.my.practical.task.view.main.search
 
 import android.text.TextUtils
 import android.view.View
@@ -7,10 +7,10 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import com.my.practical.task.R
 import com.my.practical.task.base.AppBaseActivity
-import com.my.practical.task.databinding.ActivityMainBinding
-import com.my.practical.task.ui.view.github_user.GithubUser
-import com.my.practical.task.ui.view.main.adapter.GithubUserAdapter
-import com.my.practical.task.ui.view_model.MainActivityViewModel
+import com.my.practical.task.databinding.ActivitySearchBinding
+import com.my.practical.task.view.main.github_user.GithubUserActivity
+import com.my.practical.task.view.main.search.adapter.SearchAdapter
+import com.my.practical.task.view_model.SearchViewModel
 import com.my.practical.task.util.INTENT_DATA
 import com.my.practical.task.util.checkBackPress
 import com.my.practical.task.util.doubleBackToExitPressedOnce
@@ -19,24 +19,25 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener
 import org.jetbrains.anko.startActivity
 
-class MainActivity : AppBaseActivity<ActivityMainBinding, MainActivityViewModel>(), OnLoadmoreListener, SearchView.OnQueryTextListener, View.OnClickListener {
+class SearchActivity : AppBaseActivity<ActivitySearchBinding, SearchViewModel>(), OnLoadmoreListener, SearchView.OnQueryTextListener, View.OnClickListener {
 
     var query: String = ""
     var page: Int = 1
-    lateinit var githubUserAdapter: GithubUserAdapter
+    lateinit var searchAdapter: SearchAdapter
 
     // View Binding
-    override fun setViewBinding() = ActivityMainBinding.inflate(layoutInflater)
+    override fun setViewBinding() = ActivitySearchBinding.inflate(layoutInflater)
+
     // View Model
-    override fun setViewModel() = MainActivityViewModel.newInstance(this)
+    override fun setViewModel() = SearchViewModel.newInstance(this)
 
     override fun initView() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = getString(R.string.app_name)
 
-        githubUserAdapter = GithubUserAdapter()
+        searchAdapter = SearchAdapter()
         binding.rvGithubUsers.apply {
-            adapter = githubUserAdapter.also {
+            adapter = searchAdapter.also {
                 it.addAll(arrayListOf())
             }
         }
@@ -51,8 +52,8 @@ class MainActivity : AppBaseActivity<ActivityMainBinding, MainActivityViewModel>
 
     override fun initOnClick() {
         (binding.searchView.findViewById(androidx.appcompat.R.id.search_close_btn) as ImageView).setOnClickListener(this)
-        githubUserAdapter.setItemClickListener { view, position, data ->
-            startActivity<GithubUser>(INTENT_DATA to data)
+        searchAdapter.setItemClickListener { view, position, data ->
+            startActivity<GithubUserActivity>(INTENT_DATA to data)
         }
     }
 
@@ -63,7 +64,7 @@ class MainActivity : AppBaseActivity<ActivityMainBinding, MainActivityViewModel>
                 binding.searchView.setQuery("", false)
                 query = ""
                 page = 1
-                githubUserAdapter.clearAll()
+                searchAdapter.clearAll()
             }
         }
     }
@@ -90,20 +91,12 @@ class MainActivity : AppBaseActivity<ActivityMainBinding, MainActivityViewModel>
     private fun getSearchUser() {
         viewModel.getSearchUser(query, page, binding.smartRefresh) {
             if (page == 1) {
-                githubUserAdapter.addAll(it)
+                searchAdapter.addAll(it)
             } else {
-                githubUserAdapter.appendAll(it)
+                searchAdapter.appendAll(it)
                 page++
             }
         }
-    }
-
-    override fun onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed()
-            return
-        }
-        checkBackPress()
     }
 
 }

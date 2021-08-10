@@ -1,4 +1,4 @@
-package com.my.practical.task.ui.view.github_user.adapter
+package com.my.practical.task.view.main.github_user.adapter
 
 import android.view.LayoutInflater
 import android.view.View

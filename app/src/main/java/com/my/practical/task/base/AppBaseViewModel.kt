@@ -4,12 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.viewbinding.ViewBinding
 import com.google.gson.Gson
 import com.my.practical.task.R
 import com.my.practical.task.model.responses.ResponseCode
 import com.my.practical.task.pref.AppPref.clearPref
-import com.my.practical.task.ui.view.main.MainActivity
+import com.my.practical.task.view.main.search.SearchActivity
 import com.my.practical.task.util.checkInternetConnection
 import com.my.practical.task.util.hideDialog
 import com.my.practical.task.util.showDialog
@@ -27,6 +26,7 @@ abstract class AppBaseViewModel : ViewModel() {
 
     private var context: Context? = null
 
+    // T => Template type
     fun <T> callApi(
         mContext: Context,
         observable: Observable<T>,
@@ -225,7 +225,7 @@ abstract class AppBaseViewModel : ViewModel() {
 
     private fun onAuthFail() {
         clearPref()
-        context!!.startActivity(context!!.intentFor<MainActivity>().clearTask().newTask())
+        context!!.startActivity(context!!.intentFor<SearchActivity>().clearTask().newTask())
     }
 
 }

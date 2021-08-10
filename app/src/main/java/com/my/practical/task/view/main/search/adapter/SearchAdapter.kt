@@ -1,4 +1,4 @@
-package com.my.practical.task.ui.view.main.adapter
+package com.my.practical.task.view.main.search.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import com.my.practical.task.databinding.ItemSearchRepoCellBinding
 import com.my.practical.task.model.responses.RowData
 import com.my.practical.task.util.loadImage
 
-class GithubUserAdapter : AppBaseAdapter<RowData, ItemSearchRepoCellBinding>() {
+class SearchAdapter : AppBaseAdapter<RowData, ItemSearchRepoCellBinding>() {
 
     override fun getViewBinding(parent: ViewGroup, attachToRoot: Boolean) = ItemSearchRepoCellBinding.inflate(LayoutInflater.from(parent.context), parent, attachToRoot)
 

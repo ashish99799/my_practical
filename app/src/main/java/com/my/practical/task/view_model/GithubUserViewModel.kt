@@ -1,4 +1,4 @@
-package com.my.practical.task.ui.view_model
+package com.my.practical.task.view_model
 
 import android.content.Context
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout

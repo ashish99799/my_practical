@@ -16,16 +16,20 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
 import com.my.practical.task.R
 import com.my.practical.task.databinding.ProgressBinding
-import org.jetbrains.anko.runOnUiThread
+import com.my.practical.task.model.responses.*
 import org.jetbrains.anko.toast
+import java.io.IOException
 
 const val INTENT_DATA = "INTENT_DATA"
 
 internal var SpinKitProgressDialog: Dialog? = null
 
 var doubleBackToExitPressedOnce = false
+
+var mSports = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
 
 fun Context.checkBackPress() {
     doubleBackToExitPressedOnce = true
@@ -96,4 +100,16 @@ fun ImageView.loadImage(imgUrl: Any) {
         .load(imgUrl)
         .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
         .into(this)
+}
+
+fun Context.getJsonDataFromAsset(fileName: String): ArrayList<GymList> {
+    val listData = ArrayList<GymList>()
+    try {
+        val jsonString = assets.open(fileName).bufferedReader().use { it.readText() }
+        listData.addAll((Gson().fromJson(jsonString, JsonData::class.java)).gym_list ?: arrayListOf())
+    } catch (ioException: IOException) {
+        ioException.printStackTrace()
+        listData.clear()
+    }
+    return listData
 }
